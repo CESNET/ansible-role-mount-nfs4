@@ -3,7 +3,7 @@
   mount:
     state: mounted
     path: "{{ item.path }}"
-    src: "{{ item.src}}"
+    src: "{{ item.src }}"
     fstype: nfs4
     opts: "sec=krb5i"
   loop: "{{ mount_nfs4_mounts }}"
