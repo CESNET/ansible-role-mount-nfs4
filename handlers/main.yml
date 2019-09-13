@@ -1,0 +1,6 @@
+---
+- name: "restart NFS"
+  service:
+    state: restarted
+    name: nfs-utils
+  listen: "restart nfs"

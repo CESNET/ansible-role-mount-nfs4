@@ -1,0 +1,77 @@
+---
+- name:  "Assert Ansible 2.5+ on Debian 10"
+  assert:
+    that:
+      - ansible_version.full is version_compare('2.5', '>=')
+      - ansible_distribution == "Debian"
+      - ansible_distribution_major_version in [ "10" ]
+
+- name: "install packages for NFS and Kerberos"
+  package:
+    name:
+      - nfs-common
+      - heimdal-clients
+      - krb5-config
+    state: present
+
+- name: "set {{ krb5_keytab_file }}"
+  copy:
+    dest: /etc/krb5.keytab
+    src: "{{ krb5_keytab_file }}"
+    owner: root
+    group: root
+    mode: 0400
+
+- name: "set {{ krb5_conf_file }}"
+  copy:
+    dest: /etc/krb5.conf
+    src: "{{ krb5_conf_file }}"
+
+
+- name: "set NEED_STATD"
+  lineinfile:
+    path: "/etc/default/nfs-common"
+    regexp: '^NEED_STATD='
+    line: 'NEED_STATD=yes'
+  notify:
+    - "restart nfs"
+
+- name: "set STATDOPTS"
+  lineinfile:
+    path: "/etc/default/nfs-common"
+    regexp: '^STATDOPTS='
+    line: 'STATDOPTS='
+  notify:
+    - "restart nfs"
+
+- name: "set NEED_IDMAPD"
+  lineinfile:
+    path: "/etc/default/nfs-common"
+    regexp: '^NEED_IDMAPD='
+    line: 'NEED_IDMAPD=yes'
+  notify:
+    - "restart nfs"
+
+- name: "set NEED_GSSD"
+  lineinfile:
+    path: "/etc/default/nfs-common"
+    regexp: '^NEED_GSSD='
+    line: 'NEED_GSSD=yes'
+  notify:
+    - "restart nfs"
+
+- name: "set RPCGSSDOPTS"
+  lineinfile:
+    path: "/etc/default/nfs-common"
+    regexp: '^RPCGSSDOPTS='
+    line: 'RPCGSSDOPTS="-R META"'
+  notify:
+    - "restart nfs"
+
+- name: "start rpc-gssd"
+  service:
+    name: rpc-gssd
+    state: started
+
+- name: "flush handlers"
+  meta: flush_handlers

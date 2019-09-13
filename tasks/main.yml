@@ -1,0 +1,10 @@
+---
+- import_tasks: mount_nfs4_install.yml
+  tags:
+    - mount_nfs4
+
+- import_tasks: mount_nfs4_config.yml
+  tags:
+    - mount_nfs4
+    - mount_nfs4_config
+    - config

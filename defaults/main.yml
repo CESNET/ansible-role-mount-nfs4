@@ -1,0 +1,5 @@
+---
+krb5_conf_file: "krb5.conf"
+krb5_keytab_file: "krb5.keytab"
+
+mount_nfs4_mounts: []
